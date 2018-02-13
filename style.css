@@ -6,6 +6,8 @@ html > * {
 
 body * {
 	font-size: 0;
+	font-family: Arial;
+	font-weight: bold;
 }
 
 body {
@@ -27,9 +29,10 @@ body {
 header {
 	/*border: 1px solid green;*/
 	height: 15%;
-	font-size: 2rem;
+	font-size: 4.5rem;
 	background-color: #000;
-	color: lightblue;
+
+	color: rgb(88,192,252);
 	text-align: center;
 }
 
@@ -69,23 +72,15 @@ header {
 .button_set1 {
 	/*border: 1px dashed blue;*/
 	width: 70%;
-	height: 95%;
+	height: 100%;
 	display: inline-block;
 	box-sizing: border-box;
-}
-
-.operators {
-	width: 30%;
-	height: 95%;
-	display: inline-block;
-	/*border: 1px dashed green;*/
-	box-sizing: border-box;
-	vertical-align: top;
 }
 
 .clear {
 	height: 20%;
 	width: 100%;
+	margin-bottom: 5%;
 	display: flex;
 	flex-flow: row wrap;
 }
@@ -115,13 +110,28 @@ header {
 	margin: 2%;
 }
 
+.operators {
+	width: 30%;
+	height: 95%;
+	display: inline-block;
+	/*border: 1px dashed green;*/
+	box-sizing: border-box;
+	vertical-align: top;
+	margin-top: 4.3%;
+}
+
 .operators > button {
-	width: 80%;
-	height: 20%;
+	width: 100%;
+	height: 17%;
 	font-size: 2rem;
-	margin: 0 10%;
-	background-color: rgb(122,14,70);
+	margin: 5%;
+	margin-right: 0;
+	background-color: rgb(130,0,49);
 	color: #fff;
+}
+
+.operators > button:nth-of-type(4){
+	height: 40%;
 }
 
 button {
