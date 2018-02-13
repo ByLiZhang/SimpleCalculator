@@ -11,46 +11,44 @@ body * {
 }
 
 body {
-	height: 90vw;
-	width: 80vw;
+	height: 90vh;
+	width: 100vw;
 	margin: 0 auto;
-	/*border: 1px solid gold;*/
 	box-sizing: border-box;
 }
 
 .container {
 	height: 100%;
-	width: 100%;
+	width: 80%;
 	margin: 0 auto;
-	/*border: 1px dashed blue;*/
 	box-sizing: border-box;
 }
 
 header {
-	/*border: 1px solid green;*/
-	height: 15%;
+	height: 13%;
 	font-size: 4.5rem;
-	background-color: #000;
-
+	background-color: rgb(45,45,45);
+	padding-top: 2%;
 	color: rgb(88,192,252);
 	text-align: center;
+	min-height: 95px;
 }
 
 .main {
 	height: 50%;
-	width: 40%;
-	/*border: 1px solid pink;*/
+	width: 36%;
 	margin: 0 auto;
+	min-width: 285px;
+	min-height: 435px;
 	background-color: rgb(35,55,65);
 }
 
 .rectangular {
-	/*border: 1px solid blue;*/
 	height: 100%;
 	width: 92%;
 	margin: 5% auto;
 	padding-top: 8%;
-	min-width: 250px;
+	box-sizing: border-box;
 }
 
 .screen {
@@ -70,7 +68,6 @@ header {
 }
 
 .button_set1 {
-	/*border: 1px dashed blue;*/
 	width: 70%;
 	height: 100%;
 	display: inline-block;
@@ -86,7 +83,7 @@ header {
 }
 
 .clear > button {
-	font-size: 1.5rem;
+	font-size: 1.8rem;
 	width: 45%;
 	height: 70%;
 	margin: 8% 5%;
@@ -104,26 +101,25 @@ header {
 .numbers> button {
 	width: 29.3%;
 	height: 20%;
-	font-size: 2rem;
+	font-size: 2.4rem;
 	font-style: bold;
-	/*box-sizing: border-box;*/
 	margin: 2%;
 }
 
 .operators {
 	width: 30%;
-	height: 95%;
+	height: 100%;
 	display: inline-block;
-	/*border: 1px dashed green;*/
 	box-sizing: border-box;
 	vertical-align: top;
-	margin-top: 4.3%;
+	margin: 4% 0;
 }
 
 .operators > button {
 	width: 100%;
 	height: 17%;
 	font-size: 2rem;
+	font-weight: bolder;
 	margin: 5%;
 	margin-right: 0;
 	background-color: rgb(130,0,49);
@@ -131,7 +127,7 @@ header {
 }
 
 .operators > button:nth-of-type(4){
-	height: 40%;
+	height: 37%;
 }
 
 button {
