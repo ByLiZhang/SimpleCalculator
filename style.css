@@ -59,6 +59,7 @@ header {
 	margin: 0 auto;
 	box-sizing: border-box;
 	border-top: 8px solid rgb(19, 108, 142) ;
+	font-size: 2rem;
 }
 
 .buttons {
