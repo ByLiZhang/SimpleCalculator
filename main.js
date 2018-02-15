@@ -7,29 +7,9 @@ function initializeApp() {
 }
 
 function addClickHandlers() {
-	$('.numbers button').on('click', handleNumberClick);
-	$('.operators button').on('click', handleOperatorClick);
 	$('.clear button').on('click', handleClearClick);
-}
-
-function handleNumberClick() {
-	var numberClicked = $(this).text();
-	if (numberClicked === '=') {
-		var result = doMath(dataStorage);
-		displayResult(result);
-	} else {
-		dataStorage.push(numberClicked);
-		updateDisplay(dataStorage);
-	}
-}
-
-function handleOperatorClick() {
-	var operatorClicked = $(this).text();
-	if (dataStorage.length) {
-		dataStorage.push(operatorClicked);
-	}
-
-	updateDisplay(dataStorage);
+	$('.operators button').on('click', handleOperatorClick);
+	$('.numbers button').on('click', handleNumberClick);
 }
 
 function handleClearClick() {
@@ -42,6 +22,39 @@ function handleClearClick() {
 	updateDisplay(dataStorage);
 }
 
+function handleOperatorClick() {
+	var operatorClicked = $(this).text();
+	if (dataStorage.length) {
+		dataStorage.push(operatorClicked);
+	}
+	updateDisplay(dataStorage);
+}
+
+function handleNumberClick() {
+	var numberClicked = $(this).text();
+	if (numberClicked === '=') {
+		var input = partition(dataStorage);
+		var result = doMath(input);
+		displayResult(result);
+	} else {
+		var inputItem = {};
+		inputItem.value = numberClicked;
+		inputItem.rank = 1;
+		console.log(inputItem);
+		dataStorage.push(inputItem);
+		console.log('dataStorage:', dataStorage);
+		var inputValue = [];
+		for (var i = 0; i < dataStorage.length; i++) {
+			inputValue.push(dataStorage[i].value);
+		}
+		updateDisplay(inputValue);
+	}
+}
+
+function partition() {
+	// body...
+}
+
 function updateDisplay(inputData){
 	var message = inputData.join(' ');
 	$('.screen').text(message);
@@ -49,7 +62,7 @@ function updateDisplay(inputData){
 
 function displayResult(inputData) {
 	$('.screen').text(inputData);
-	dataStorage = [];
+	dataStorage = [inputData];
 }
 
 function doMath(inputData) {
@@ -63,7 +76,7 @@ function doMath(inputData) {
 			firstOperatorSeen = inputData[i]; 
 		} else if (firstOperatorSeen && !secondOperatorSeen) {
 			num2 += inputData[i];
-		} else if (operators.includes(inputData[i]) && firstOperatorSeen) {
+		} else if (operators.includes(inputData[i]) && firstOperatorSeen && !secondOperatorSeen) {
 			secondOperatorPostion = i;
 		}
 		else {
