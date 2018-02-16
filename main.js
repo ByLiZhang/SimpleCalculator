@@ -1,8 +1,8 @@
 $(document).ready(initializeApp);
 
 var dataStorage = [{
-	value: ' ',
-	rank: ' ',
+	value: '',
+	rank: '',
 }];
 var operators = ['+', '-', '*', '/'];
 
@@ -31,7 +31,7 @@ function handleOperatorClick() {
 	var target = dataStorage[dataStorage.length-1];
 	if ( operators.includes(target.value)) {
 			target.value = operatorClicked; // only keep the last operator
-	} else if ( target.value !== ' '){ 
+	} else if ( target.value !== undefined){ 
 		insert(operatorClicked, 2);
 	}		
 	updateDisplay(dataStorage);
@@ -41,10 +41,11 @@ function handleNumberClick() {
 	var numberClicked = $(this).text();
 	var target = dataStorage[dataStorage.length-1];
 	if (numberClicked === '=') {
-		var input = partition(dataStorage);
-		var result = doMath(input);
+		format(dataStorage);
+		console.log(dataStorage);
+		var result = doMath(dataStorage);
 		displayResult(result);
-		dataStorage = []; //clear input before next calculation 		
+		// dataStorage = []; //clear input before next calculation 		
 	} else if (numberClicked === '.'){
 		if(target.value.indexOf('.') === -1 && !operators.includes(target.value)) {
 			storeValue(target.value += numberClicked, 1);
@@ -52,7 +53,7 @@ function handleNumberClick() {
 			insert(numberClicked, 1);
 		}
 	} else if (numberClicked !== '.') {
-		if (!operators.includes(target.value)){
+		if (!operators.includes(target.value) || target.value === undefined){
 		storeValue(target.value += numberClicked, 1);
 		} else if (operators.includes(target.value)){
 			insert(numberClicked, 1);
@@ -81,8 +82,15 @@ function getValue(dataSource) {
 	return storedValue;
 }
 
-function partition() {
-	
+function format(inputData) {
+	if (operators.includes(inputData[inputData.length-1].value)){
+		inputData.pop();
+	}
+	for (var i = 0; i < inputData.length; i++) {
+	 	if (inputData[i].value === '*' || inputData[i].value === '/'){
+	 	inputData[i].rank = 3;
+	 	}
+	}
 }
 
 function updateDisplay(inputData){
@@ -96,31 +104,19 @@ function displayResult(inputData) {
 }
 
 function doMath(inputData) {
-	var num1 = '';
-	var num2 = '';
-	var firstOperatorSeen = false;
-	var secondOperatorSeen = false;
 	for (var i = 0; i < inputData.length; i++){
-		if (operators.includes(inputData[i]) && !firstOperatorSeen){
-			firstOperatorSeen = inputData[i]; 
-		} else if (firstOperatorSeen && !secondOperatorSeen) {
-			num2 += inputData[i];
-		} else if (operators.includes(inputData[i]) && firstOperatorSeen && !secondOperatorSeen) {
-			secondOperatorPostion = i;
-		}
-		else {
-			num1 += inputData[i];
+		if (inputData[i].rank === 3){
+			if (inputData[i].value === '*'){
+				inputData[i-1].value *= inputData[i+1].value; 
+			} else if (inputData[i].value === '/'){
+				if (inputData[i+1].value == 0) {
+					updateDisplay(['Error']);
+				} else {
+					inputData[i-1].value /= inputData[i+1].value; 
+				}
+			}
+			inputData.splice(i, 2);
 		}
 	}
-	if (firstOperatorSeen === '+') {
-		return Number(num1) + Number(num2);
-	} else if (firstOperatorSeen === '-') {
-		return Number(num1) - Number(num2);
-	} else if (firstOperatorSeen === '*') {
-		return Number(num1) * Number(num2);
-	} else if (firstOperatorSeen === '/' && num2 != 0) {
-		return Number(num1)/Number(num2);
-	} else {
-		return 'Error';
-	}
+	return inputData;
 }
