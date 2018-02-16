@@ -23,13 +23,7 @@ function handleClearClick() {
 	updateDisplay(storedValue);
 }
 
-function getValue(dataSource) {
-	var storedValue = [];
-	for (var i = 0; i < dataSource.length; i++) {
-		storedValue.push(dataSource[i].value);
-	}
-	return storedValue;
-}
+
 
 function handleOperatorClick() {
 	var operatorClicked = $(this).attr('value');
@@ -76,8 +70,19 @@ function storeValue(input, rank) {
 	inputItem.rank = rank;
 	console.log(inputItem);
 	dataStorage[dataStorage.length-1] = inputItem;
-	console.log('last data:', dataStorage[dataStorage.length-1]); //bug here
-	var storedValue = getValue(dataStorage);
+	console.log('last data:', dataStorage[dataStorage.length-1]); 
+	console.log(dataStorage);
+	var storedValue = getValue(dataStorage); //bug here
+	console.log('stored',storedValue);
+	return storedValue;
+}
+
+function getValue(dataSource) {
+	var storedValue = [];
+	for (var i = 0; i < dataSource.length; i++) {
+		storedValue.push(dataSource[i].value);
+		console.log('pushed into arr', storedValue);
+	}
 	return storedValue;
 }
 
