@@ -1,7 +1,7 @@
 $(document).ready(initializeApp);
 
 var dataStorage = [];
-
+var operators = ['+', '-', '*', '/'];
 function initializeApp() {
 	addClickHandlers();
 }
@@ -19,15 +19,29 @@ function handleClearClick() {
 	if ($(this).text() === 'CE') {
 		dataStorage = [];
 	}
-	updateDisplay(dataStorage);
+	var storedValue = getValue(dataStorage);
+	updateDisplay(storedValue);
+}
+
+function getValue(dataSource) {
+	var storedValue = [];
+	for (var i = 0; i < dataSource.length; i++) {
+		storedValue.push(dataSource[i].value);
+	}
+	return storedValue;
 }
 
 function handleOperatorClick() {
-	var operatorClicked = $(this).text();
+	var operatorClicked = $(this).attr('value');
+	var storedValue = [];
 	if (dataStorage.length) {
-		dataStorage.push(operatorClicked);
+		// when multiple operators were chain pressed - only keep the last one
+		if(operators.includes(dataStorage[dataStorage.length-1].value)){
+			dataStorage.pop();
+		}
+		storedValue = storeValue(operatorClicked, 2);
 	}
-	updateDisplay(dataStorage);
+	updateDisplay(storedValue);
 }
 
 function handleNumberClick() {
@@ -36,23 +50,29 @@ function handleNumberClick() {
 		var input = partition(dataStorage);
 		var result = doMath(input);
 		displayResult(result);
-	} else {
-		var inputItem = {};
-		inputItem.value = numberClicked;
-		inputItem.rank = 1;
-		console.log(inputItem);
-		dataStorage.push(inputItem);
-		console.log('dataStorage:', dataStorage);
-		var inputValue = [];
-		for (var i = 0; i < dataStorage.length; i++) {
-			inputValue.push(dataStorage[i].value);
+	} else if (numberClicked === '.'){
+		if (dataStorage.length && dataStorage[dataStorage.length-1].value !== '.' && !operators.includes(dataStorage[dataStorage.length-1].value)){
+			//disallow meaningless '.'
+		var storedValue = storeValue(numberClicked, 3);
+		updateDisplay(storedValue);
 		}
-		updateDisplay(inputValue);
+	} else {
+		var storedValue = storeValue(numberClicked, 1);
+		updateDisplay(storedValue);
 	}
 }
 
+function storeValue(input, rank) {
+	var inputItem = {};
+	inputItem.value = input;
+	inputItem.rank = rank;
+	dataStorage.push(inputItem);
+	var storedValue = getValue(dataStorage);
+	return storedValue;
+}
+
 function partition() {
-	// body...
+	
 }
 
 function updateDisplay(inputData){
@@ -70,7 +90,6 @@ function doMath(inputData) {
 	var num2 = '';
 	var firstOperatorSeen = false;
 	var secondOperatorSeen = false;
-	var operators = ['+', '-', '*', '/'];
 	for (var i = 0; i < inputData.length; i++){
 		if (operators.includes(inputData[i]) && !firstOperatorSeen){
 			firstOperatorSeen = inputData[i]; 
