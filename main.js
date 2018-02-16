@@ -4,8 +4,10 @@ var dataStorage = [{
 	value: '',
 	rank: '',
 }];
+var inputHistory = [];
 var operators = ['+', '-', '*', '/'];
 var displayMessage;
+var calculated = false;
 
 function initializeApp() {
 	addClickHandlers();
@@ -31,6 +33,7 @@ function handleClearClick() {
 function handleOperatorClick() {
 	var operatorClicked = $(this).attr('value');
 	var target = dataStorage[dataStorage.length-1];
+	calculated = false;
 	if ( operators.includes(target.value)) {
 			target.value = operatorClicked; // only keep the last operator
 	} else if ( target.value !== undefined){ 
@@ -42,12 +45,13 @@ function handleOperatorClick() {
 function handleNumberClick() {
 	var numberClicked = $(this).text();
 	var target = dataStorage[dataStorage.length-1];
-	if (numberClicked === '=') {
-		// insert('=', 1);
+	if (numberClicked === '=') {	
 		format(dataStorage);
+		inputHistory = getValue(dataStorage);
+		console.log(inputHistory);
 		var result = doMath(dataStorage);
 		updateDisplay(result);
-		// insert(' ', 1);
+		calculated = true;
 	} else {
 		if (numberClicked === '.'){
 			if(target.value.toString().indexOf('.') === -1 && !operators.includes(target.value)) {
@@ -56,10 +60,18 @@ function handleNumberClick() {
 				insert(numberClicked, 1);
 			}
 		} else if (numberClicked !== '.') {
+			if (calculated) {
+				dataStorage = [];
+				insert();
+				target = dataStorage[dataStorage.length-1];
+				calculated = false;
+			} 
 			if ( target.value === undefined || !operators.includes(target.value)){
 			storeValue(target.value += numberClicked, 1);
 			} else if (operators.includes(target.value)){
 				insert(numberClicked, 1);
+			} else if (!calculated) {
+				insert();
 			}
 		} 
 		updateDisplay(dataStorage);
@@ -104,11 +116,6 @@ function updateDisplay(inputData){
 	$('.screen').text(displayMessage);
 }
 
-// function displayResult(inputData) {
-// 	$('.screen').text(inputData);
-// 	dataStorage = [inputData];
-// }
-
 function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++){
 		if (inputData[i].rank === 3){
@@ -137,6 +144,7 @@ function doMath(inputData) {
 				inputData[i-1].value -= inputData[i+1].value; 
 			}
 			inputData.splice(i, 2);
+			i -= 2;
 		}
 	}
 	return inputData;
