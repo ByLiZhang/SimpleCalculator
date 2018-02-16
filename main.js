@@ -1,7 +1,11 @@
 $(document).ready(initializeApp);
 
-var dataStorage = [];
+var dataStorage = [{
+	value: ' ',
+	rank: ' ',
+}];
 var operators = ['+', '-', '*', '/'];
+
 function initializeApp() {
 	addClickHandlers();
 }
@@ -19,69 +23,60 @@ function handleClearClick() {
 	if ($(this).text() === 'C') {
 		dataStorage = [];
 	}
-	var storedValue = getValue(dataStorage);
-	updateDisplay(storedValue);
+	updateDisplay(dataStorage);
 }
-
-
 
 function handleOperatorClick() {
 	var operatorClicked = $(this).attr('value');
-	var storedValue = [];
-	if (dataStorage.length) {
-		// when multiple operators were chain pressed - only keep the last one
-		if(operators.includes(dataStorage[dataStorage.length-1].value)){
-			dataStorage.pop();
-		}
-		storedValue = storeValue(operatorClicked, 2);
-	}
-	updateDisplay(storedValue);
+	var target = dataStorage[dataStorage.length-1];
+	if ( operators.includes(target.value)) {
+			target.value = operatorClicked; // only keep the last operator
+	} else if ( target.value !== ' '){ 
+		insert(operatorClicked, 2);
+	}		
+	updateDisplay(dataStorage);
 }
 
 function handleNumberClick() {
 	var numberClicked = $(this).text();
+	var target = dataStorage[dataStorage.length-1];
 	if (numberClicked === '=') {
 		var input = partition(dataStorage);
 		var result = doMath(input);
 		displayResult(result);
-		dataStorage = []; //clear the stored input 
-	} else if (!dataStorage.length){
-		if (numberClicked === '.'){
-			var storedValue = storeValue(numberClicked, 3);
-		} else {
-			var storedValue = storeValue(numberClicked, 1);
-		}		
-		updateDisplay(storedValue);
-	} else if (numberClicked === '.' && dataStorage[dataStorage.length-1].value.indexOf('.') === -1){
-			//disallow meaningless '.'
-		dataStorage[dataStorage.length-1].value += numberClicked;
-		var storedValue = storeValue(numberClicked, 3);
-		updateDisplay(storedValue);
-	} else {
-		dataStorage[dataStorage.length-1].value += numberClicked;
-		var storedValue = storeValue(dataStorage[dataStorage.length-1].value, 1);
-		updateDisplay(storedValue);
-	}
+		dataStorage = []; //clear input before next calculation 		
+	} else if (numberClicked === '.'){
+		if(target.value.indexOf('.') === -1) {
+			storeValue(target.value += numberClicked, 3);
+		} else if( dataStorage[0].value === ''){
+		insert(numberClicked, 1);
+		}
+	} else if (numberClicked !== '.') {
+		if (!operators.includes(target.value)){
+		storeValue(target.value += numberClicked, 1);
+		} else if (operators.includes(target.value)){
+			insert(numberClicked, 1);
+		}
+	} 
+	updateDisplay(dataStorage);
+}
+
+function insert(inputData, rank) {
+	var itemToAdd = {};
+		itemToAdd.value = inputData;
+		itemToAdd.rank = rank;
+		dataStorage.push(itemToAdd);
 }
 
 function storeValue(input, rank) {
-	var inputItem = {};
-	inputItem.value = input;
-	inputItem.rank = rank;
-	console.log(inputItem);
-	dataStorage[dataStorage.length-1] = inputItem;
-	console.log('last data:', dataStorage[dataStorage.length-1]); 
-	console.log(dataStorage);
-	var storedValue = getValue(dataStorage); //bug here
-	console.log('stored',storedValue);
-	return storedValue;
+		dataStorage[dataStorage.length-1].value = input;
+		dataStorage[dataStorage.length-1].rank = rank;
 }
 
 function getValue(dataSource) {
 	var storedValue = [];
 	for (var i = 0; i < dataSource.length; i++) {
 		storedValue.push(dataSource[i].value);
-		console.log('pushed into arr', storedValue);
 	}
 	return storedValue;
 }
@@ -91,9 +86,7 @@ function partition() {
 }
 
 function updateDisplay(inputData){
-	console.log(inputData);
-	var message = inputData.join(' ');
-	console.log('msg:', message);
+	var message = getValue(inputData).join(' ');
 	$('.screen').text(message);
 }
 
