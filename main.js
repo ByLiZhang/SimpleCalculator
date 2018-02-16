@@ -46,10 +46,10 @@ function handleNumberClick() {
 		displayResult(result);
 		dataStorage = []; //clear input before next calculation 		
 	} else if (numberClicked === '.'){
-		if(target.value.indexOf('.') === -1) {
-			storeValue(target.value += numberClicked, 3);
-		} else if( dataStorage[0].value === ''){
-		insert(numberClicked, 1);
+		if(target.value.indexOf('.') === -1 && !operators.includes(target.value)) {
+			storeValue(target.value += numberClicked, 1);
+		} else if (operators.includes(target.value)){
+			insert(numberClicked, 1);
 		}
 	} else if (numberClicked !== '.') {
 		if (!operators.includes(target.value)){
