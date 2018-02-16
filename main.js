@@ -13,10 +13,10 @@ function addClickHandlers() {
 }
 
 function handleClearClick() {
-	if ($(this).text() === 'C') {
+	if ($(this).text() === 'CE') {
 		dataStorage.pop();
 	} 
-	if ($(this).text() === 'CE') {
+	if ($(this).text() === 'C') {
 		dataStorage = [];
 	}
 	var storedValue = getValue(dataStorage);
@@ -50,14 +50,22 @@ function handleNumberClick() {
 		var input = partition(dataStorage);
 		var result = doMath(input);
 		displayResult(result);
-	} else if (numberClicked === '.'){
-		if (dataStorage.length && dataStorage[dataStorage.length-1].value !== '.' && !operators.includes(dataStorage[dataStorage.length-1].value)){
+		dataStorage = []; //clear the stored input 
+	} else if (!dataStorage.length){
+		if (numberClicked === '.'){
+			var storedValue = storeValue(numberClicked, 3);
+		} else {
+			var storedValue = storeValue(numberClicked, 1);
+		}		
+		updateDisplay(storedValue);
+	} else if (numberClicked === '.' && dataStorage[dataStorage.length-1].value.indexOf('.') === -1){
 			//disallow meaningless '.'
+		dataStorage[dataStorage.length-1].value += numberClicked;
 		var storedValue = storeValue(numberClicked, 3);
 		updateDisplay(storedValue);
-		}
 	} else {
-		var storedValue = storeValue(numberClicked, 1);
+		dataStorage[dataStorage.length-1].value += numberClicked;
+		var storedValue = storeValue(dataStorage[dataStorage.length-1].value, 1);
 		updateDisplay(storedValue);
 	}
 }
@@ -66,7 +74,9 @@ function storeValue(input, rank) {
 	var inputItem = {};
 	inputItem.value = input;
 	inputItem.rank = rank;
-	dataStorage.push(inputItem);
+	console.log(inputItem);
+	dataStorage[dataStorage.length-1] = inputItem;
+	console.log('last data:', dataStorage[dataStorage.length-1]); //bug here
 	var storedValue = getValue(dataStorage);
 	return storedValue;
 }
@@ -76,7 +86,9 @@ function partition() {
 }
 
 function updateDisplay(inputData){
+	console.log(inputData);
 	var message = inputData.join(' ');
+	console.log('msg:', message);
 	$('.screen').text(message);
 }
 
