@@ -42,18 +42,17 @@ function handleNumberClick() {
 	var target = dataStorage[dataStorage.length-1];
 	if (numberClicked === '=') {
 		format(dataStorage);
-		console.log(dataStorage);
 		var result = doMath(dataStorage);
-		displayResult(result);
-		// dataStorage = []; //clear input before next calculation 		
+		updateDisplay(result);
+		insert('+', 2);
 	} else if (numberClicked === '.'){
-		if(target.value.indexOf('.') === -1 && !operators.includes(target.value)) {
+		if(target.value.toString().indexOf('.') === -1 && !operators.includes(target.value)) {
 			storeValue(target.value += numberClicked, 1);
 		} else if (operators.includes(target.value)){
 			insert(numberClicked, 1);
 		}
 	} else if (numberClicked !== '.') {
-		if (!operators.includes(target.value) || target.value === undefined){
+		if ( target.value === undefined || !operators.includes(target.value)){
 		storeValue(target.value += numberClicked, 1);
 		} else if (operators.includes(target.value)){
 			insert(numberClicked, 1);
@@ -89,6 +88,8 @@ function format(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
 	 	if (inputData[i].value === '*' || inputData[i].value === '/'){
 	 	inputData[i].rank = 3;
+	 	} else if (!operators.includes(inputData[i].value)){
+	 		inputData[i].value = parseFloat(inputData[i].value);
 	 	}
 	}
 }
@@ -114,6 +115,17 @@ function doMath(inputData) {
 				} else {
 					inputData[i-1].value /= inputData[i+1].value; 
 				}
+			}
+			inputData.splice(i, 2);
+		}
+	}
+	for (var i = 0; i < inputData.length; i++) {
+		if (inputData[i].rank === 2) {
+			if (inputData[i].value === '+') {
+				inputData[i-1].value += inputData[i+1].value; 
+			}
+			if (inputData[i].value === '-') {
+				inputData[i-1].value -= inputData[i+1].value; 
 			}
 			inputData.splice(i, 2);
 		}
