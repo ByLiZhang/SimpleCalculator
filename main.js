@@ -5,6 +5,7 @@ var dataStorage = [{
 	rank: '',
 }];
 var operators = ['+', '-', '*', '/'];
+var displayMessage;
 
 function initializeApp() {
 	addClickHandlers();
@@ -22,6 +23,7 @@ function handleClearClick() {
 	} 
 	if ($(this).text() === 'C') {
 		dataStorage = [];
+		insert('','');
 	}
 	updateDisplay(dataStorage);
 }
@@ -41,30 +43,33 @@ function handleNumberClick() {
 	var numberClicked = $(this).text();
 	var target = dataStorage[dataStorage.length-1];
 	if (numberClicked === '=') {
+		// insert('=', 1);
 		format(dataStorage);
 		var result = doMath(dataStorage);
 		updateDisplay(result);
-		insert('+', 2);
-	} else if (numberClicked === '.'){
-		if(target.value.toString().indexOf('.') === -1 && !operators.includes(target.value)) {
+		// insert(' ', 1);
+	} else {
+		if (numberClicked === '.'){
+			if(target.value.toString().indexOf('.') === -1 && !operators.includes(target.value)) {
+				storeValue(target.value += numberClicked, 1);
+			} else if (operators.includes(target.value)){
+				insert(numberClicked, 1);
+			}
+		} else if (numberClicked !== '.') {
+			if ( target.value === undefined || !operators.includes(target.value)){
 			storeValue(target.value += numberClicked, 1);
-		} else if (operators.includes(target.value)){
-			insert(numberClicked, 1);
-		}
-	} else if (numberClicked !== '.') {
-		if ( target.value === undefined || !operators.includes(target.value)){
-		storeValue(target.value += numberClicked, 1);
-		} else if (operators.includes(target.value)){
-			insert(numberClicked, 1);
-		}
-	} 
-	updateDisplay(dataStorage);
+			} else if (operators.includes(target.value)){
+				insert(numberClicked, 1);
+			}
+		} 
+		updateDisplay(dataStorage);
+	}
 }
 
 function insert(inputData, rank) {
 	var itemToAdd = {};
-		itemToAdd.value = inputData;
-		itemToAdd.rank = rank;
+		itemToAdd.value = inputData || '';
+		itemToAdd.rank = rank || '';
 		dataStorage.push(itemToAdd);
 }
 
@@ -95,34 +100,38 @@ function format(inputData) {
 }
 
 function updateDisplay(inputData){
-	var message = getValue(inputData).join(' ');
-	$('.screen').text(message);
+	var displayMessage = getValue(inputData).join(' ');
+	$('.screen').text(displayMessage);
 }
 
-function displayResult(inputData) {
-	$('.screen').text(inputData);
-	dataStorage = [inputData];
-}
+// function displayResult(inputData) {
+// 	$('.screen').text(inputData);
+// 	dataStorage = [inputData];
+// }
 
 function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++){
 		if (inputData[i].rank === 3){
 			if (inputData[i].value === '*'){
 				inputData[i-1].value *= inputData[i+1].value; 
+				inputData.splice(i, 2);
 			} else if (inputData[i].value === '/'){
-				if (inputData[i+1].value == 0) {
-					updateDisplay(['Error']);
+				if (parseFloat(inputData[i+1].value) === 0) {
+					inputData = [{
+						value: 'Error'
+					}];
 				} else {
 					inputData[i-1].value /= inputData[i+1].value; 
+					inputData[i-1].value = Number(inputData[i-1].value).toFixed(6);
+					inputData.splice(i, 2);
 				}
 			}
-			inputData.splice(i, 2);
 		}
 	}
 	for (var i = 0; i < inputData.length; i++) {
 		if (inputData[i].rank === 2) {
 			if (inputData[i].value === '+') {
-				inputData[i-1].value += inputData[i+1].value; 
+				inputData[i-1].value = parseFloat(inputData[i-1].value) + parseFloat(inputData[i+1].value); 
 			}
 			if (inputData[i].value === '-') {
 				inputData[i-1].value -= inputData[i+1].value; 
