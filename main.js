@@ -46,22 +46,8 @@ function handleNumberClick() {
 	var numberClicked = $(this).text();
 	var target = dataStorage[dataStorage.length-1];
 	if (numberClicked === '=') {
-		if(!calculated){
-			format(dataStorage);
-			inputHistory = JSON.parse(JSON.stringify(dataStorage));
-			console.log(inputHistory);
-			var result = doMath(dataStorage);
-			updateDisplay(result);
-		} else {
-			console.log('inputHistory after =:', inputHistory);
-			var lastOperation = inputHistory.slice(inputHistory.length-2);
-			console.log('lastOperation',lastOperation);
-			var newData = dataStorage.concat(lastOperation);
-			console.log(newData);
-			var result = doMath(newData);
-			updateDisplay(result);
-		}	
-		calculated = true;	
+		handleEquals(dataStorage);
+			
 	} else {
 		if (numberClicked === '.'){
 			if(target.value.toString().indexOf('.') === -1 && !operators.includes(target.value)) {
@@ -86,6 +72,40 @@ function handleNumberClick() {
 		} 
 		updateDisplay(dataStorage);
 	}
+}
+
+function isNumeric(num) {
+	return !isNaN(parseFloat(num)) && isFinite(num);
+}
+
+function handleEquals(inputData) {
+	if(!calculated){
+		var result;
+		if(dataStorage.length === 2 && isNumeric(dataStorage[0].value) && operators.includes(dataStorage[1].value)){
+			var repeatData = JSON.parse(JSON.stringify(dataStorage[0]));
+			console.log('repeatData:',repeatData);
+			dataStorage.push(repeatData); 
+			format(dataStorage);
+			result = doMath(dataStorage);
+			console.log(result);
+		} else {
+			format(inputData);
+			inputHistory = JSON.parse(JSON.stringify(inputData));
+			console.log(inputHistory);
+			result = doMath(inputData);
+		}
+		updateDisplay(result);
+	} else {
+		format(inputData);
+		console.log('inputHistory after =:', inputHistory);
+		var lastOperation = inputHistory.slice(inputHistory.length-2);
+		console.log('lastOperation',lastOperation);
+		var newData = inputData.concat(lastOperation);
+		console.log(newData);
+		var result = doMath(newData);
+		updateDisplay(result);
+	}	
+	calculated = true;
 }
 
 function insert(inputData, rank) {
