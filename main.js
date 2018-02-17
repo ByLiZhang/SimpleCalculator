@@ -176,7 +176,8 @@ function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
 		if (inputData[i].rank === 2) {
 			if (inputData[i].value === '+') {
-				inputData[i-1].value = parseFloat(inputData[i-1].value) + parseFloat(inputData[i+1].value); 
+				inputData[i-1].value = (parseFloat(inputData[i-1].value) + parseFloat(inputData[i+1].value)).toFixed(6);
+				// inputData[i-1].value.toFixed(6);
 			}
 			if (inputData[i].value === '-') {
 				inputData[i-1].value -= inputData[i+1].value; 
