@@ -53,7 +53,7 @@ function handleNumberClick() {
 			} else if (operators.includes(lastEntry.value)){
 				insert(dataStorage,numberClicked, 1);
 			}
-		} else if (isNumeric(numberClicked)) { //numberClicked !== '.'
+		} else if (isNumeric(numberClicked)) { 
 			if (calculated) {
 				dataStorage = [];
 				insert(dataStorage);
@@ -64,8 +64,6 @@ function handleNumberClick() {
 			storeValue(dataStorage,lastEntry.value += numberClicked, 1);
 			} else if (operators.includes(lastEntry.value)){
 				insert(dataStorage,numberClicked, 1);
-			// } else if (!calculated) {
-			// 	insert();
 			}
 		} 
 		updateDisplay(dataStorage);
@@ -78,26 +76,29 @@ function isNumeric(num) {
 
 function handleEquals(inputData) {
 	var result;
-	inputHistory = JSON.parse(JSON.stringify(inputData));
+	// inputHistory = JSON.parse(JSON.stringify(inputData));
 	console.log('inputHistory',inputHistory);
 	console.log('dataStorage',dataStorage);
 	if(!calculated){	
 		if (inputData[0].value === '' && inputData.length === 1) {		
-			storeValue(inputData,'0', 1); // for 'missing operands'
+			storeValue(inputData,'Ready', 1); // for 'missing operands'
 			result = doMath(inputData);
 		} else if(inputData.length === 2 && isNumeric(inputData[0].value) && operators.includes(inputData[1].value)){
+			inputHistory = JSON.parse(JSON.stringify(inputData));
 			var repeatData = JSON.parse(JSON.stringify(inputData[0]));
 			console.log('repeatData:',repeatData);
 			inputData.push(repeatData); 
 			format(inputData);
 			result = doMath(inputData);
 			console.log(result);
-		} else if (inputData.length === 1 && inputData[0].value === '') {
-			insert(dataStorage,0, 1);
-			result = doMath(inputData);
+		// } else if (inputData.length === 1 && inputData[0].value === '') {
+		// 	storeValue(inputData, 'Ready', 1);
+		// 	result = doMath(inputData);
+		// 	inputData = [];
+		// 	insert(inputData);
 		}else {
+			inputHistory = JSON.parse(JSON.stringify(inputData));
 			format(inputData);
-			// inputHistory = JSON.parse(JSON.stringify(inputData));
 			result = doMath(inputData);
 		}
 	} else {
@@ -106,8 +107,9 @@ function handleEquals(inputData) {
 			inputData.push(repeatData);
 			format(inputData);
 			result = doMath(inputData);
-		} else if (inputData.length === 1 ){//&& inputData[0].value === ''
-			// inputData[0].value = 0;  // for 'missing operations'
+		} else if (inputData[0].value === 'Ready' && inputData.length === 1){
+			storeValue(inputData,'Ready', 1); // for 'missing operands'
+			console.log('rdy again');
 			result = doMath(inputData);
 			// inputData = [];
 			// insert(); //bug
