@@ -4,7 +4,7 @@ var dataStorage = [{
 	value: '',
 	rank: '',
 }];
-var operators = ['+', '-', '*', '/'];
+var operators = ['+', '-', '*', '/', '>>'];
 
 function initializeApp() {
 	addClickHandlers();
@@ -44,7 +44,7 @@ function handleNumberClick() {
 		format(dataStorage);
 		var result = doMath(dataStorage);
 		updateDisplay(result);
-		insert('+', 2);
+		insert('>>', 2);
 	} else if (numberClicked === '.'){
 		if(target.value.toString().indexOf('.') === -1 && !operators.includes(target.value)) {
 			storeValue(target.value += numberClicked, 1);
