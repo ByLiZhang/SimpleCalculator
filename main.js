@@ -45,13 +45,23 @@ function handleOperatorClick() {
 function handleNumberClick() {
 	var numberClicked = $(this).text();
 	var target = dataStorage[dataStorage.length-1];
-	if (numberClicked === '=') {	
-		format(dataStorage);
-		inputHistory = getValue(dataStorage);
-		console.log(inputHistory);
-		var result = doMath(dataStorage);
-		updateDisplay(result);
-		calculated = true;
+	if (numberClicked === '=') {
+		if(!calculated){
+			format(dataStorage);
+			inputHistory = dataStorage.slice();
+			console.log(inputHistory);
+			var result = doMath(dataStorage);
+			updateDisplay(result);
+		} else {
+			console.log('inputHistory after =:', inputHistory);
+			var lastOperation = inputHistory.slice(inputHistory.length-2);
+			console.log('lastOperation',lastOperation);
+			var newData = dataStorage.concat(lastOperation);
+			console.log(newData);
+			var result = doMath(newData);
+			updateDisplay(result);
+		}	
+		calculated = true;	
 	} else {
 		if (numberClicked === '.'){
 			if(target.value.toString().indexOf('.') === -1 && !operators.includes(target.value)) {
