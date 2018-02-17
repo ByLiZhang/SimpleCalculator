@@ -6,7 +6,6 @@ var dataStorage = [{
 }];
 var inputHistory = [];
 var operators = ['+', '-', '*', '/'];
-var displayMessage;
 var calculated = false;
 
 function initializeApp() {
@@ -25,48 +24,48 @@ function handleClearClick() {
 	} 
 	if ($(this).text() === 'C') {
 		dataStorage = [];
-		insert();
+		insert(dataStorage);
 	}
 	updateDisplay(dataStorage);
 }
 
 function handleOperatorClick() {
 	var operatorClicked = $(this).attr('value');
-	var target = dataStorage[dataStorage.length-1];
+	var lastEntry = dataStorage[dataStorage.length-1];
 	calculated = false;
-	if ( operators.includes(target.value)) {
-			target.value = operatorClicked; // only keep the last operator
-	} else if ( target.value !== undefined){ 
-		insert(operatorClicked, 2);
+	if ( operators.includes(lastEntry.value)) {
+			lastEntry.value = operatorClicked; // only stores the last operator
+	} else if ( lastEntry.value !== undefined){ 
+		insert(dataStorage,operatorClicked, 2);
 	}		
 	updateDisplay(dataStorage);
 }
 
 function handleNumberClick() {
 	var numberClicked = $(this).text();
-	var target = dataStorage[dataStorage.length-1];
+	var lastEntry = dataStorage[dataStorage.length-1];
 	if (numberClicked === '=') {
 		handleEquals(dataStorage);		
 	} else {
 		if (numberClicked === '.'){
-			if(target.value.toString().indexOf('.') === -1 && !operators.includes(target.value)) {
-				storeValue(target.value += numberClicked, 1);
-			} else if (operators.includes(target.value)){
-				insert(numberClicked, 1);
+			if(lastEntry.value.toString().indexOf('.') === -1 && !operators.includes(lastEntry.value)) {
+				storeValue(dataStorage,lastEntry.value += numberClicked, 1);
+			} else if (operators.includes(lastEntry.value)){
+				insert(dataStorage,numberClicked, 1);
 			}
-		} else if (numberClicked !== '.') {
+		} else if (isNumeric(numberClicked)) { //numberClicked !== '.'
 			if (calculated) {
 				dataStorage = [];
-				insert();
-				target = dataStorage[dataStorage.length-1];
+				insert(dataStorage);
+				lastEntry = dataStorage[dataStorage.length-1];
 				calculated = false;
 			} 
-			if ( target.value === undefined || !operators.includes(target.value)){
-			storeValue(target.value += numberClicked, 1);
-			} else if (operators.includes(target.value)){
-				insert(numberClicked, 1);
-			} else if (!calculated) {
-				insert();
+			if ( lastEntry.value === undefined || !operators.includes(lastEntry.value)){
+			storeValue(dataStorage,lastEntry.value += numberClicked, 1);
+			} else if (operators.includes(lastEntry.value)){
+				insert(dataStorage,numberClicked, 1);
+			// } else if (!calculated) {
+			// 	insert();
 			}
 		} 
 		updateDisplay(dataStorage);
@@ -78,19 +77,27 @@ function isNumeric(num) {
 }
 
 function handleEquals(inputData) {
-	if(!calculated){
-		var result;
-		if(inputData.length === 2 && isNumeric(inputData[0].value) && operators.includes(inputData[1].value)){
+	var result;
+	inputHistory = JSON.parse(JSON.stringify(inputData));
+	console.log('inputHistory',inputHistory);
+	console.log('dataStorage',dataStorage);
+	if(!calculated){	
+		if (inputData[0].value === '' && inputData.length === 1) {		
+			storeValue(inputData,'0', 1); // for 'missing operands'
+			result = doMath(inputData);
+		} else if(inputData.length === 2 && isNumeric(inputData[0].value) && operators.includes(inputData[1].value)){
 			var repeatData = JSON.parse(JSON.stringify(inputData[0]));
 			console.log('repeatData:',repeatData);
 			inputData.push(repeatData); 
 			format(inputData);
 			result = doMath(inputData);
 			console.log(result);
-		} else {
+		} else if (inputData.length === 1 && inputData[0].value === '') {
+			insert(dataStorage,0, 1);
+			result = doMath(inputData);
+		}else {
 			format(inputData);
-			inputHistory = JSON.parse(JSON.stringify(inputData));
-			console.log(inputHistory);
+			// inputHistory = JSON.parse(JSON.stringify(inputData));
 			result = doMath(inputData);
 		}
 	} else {
@@ -99,6 +106,11 @@ function handleEquals(inputData) {
 			inputData.push(repeatData);
 			format(inputData);
 			result = doMath(inputData);
+		} else if (inputData.length === 1 ){//&& inputData[0].value === ''
+			// inputData[0].value = 0;  // for 'missing operations'
+			result = doMath(inputData);
+			// inputData = [];
+			// insert(); //bug
 		} else {
 			format(inputData);
 			console.log('inputHistory after =:', inputHistory);
@@ -113,16 +125,16 @@ function handleEquals(inputData) {
 	calculated = true;
 }
 
-function insert(inputData, rank) {
+function insert(inputData, value, rank) {
 	var itemToAdd = {};
-		itemToAdd.value = inputData || '';
+		itemToAdd.value = value || '';
 		itemToAdd.rank = rank || '';
-		dataStorage.push(itemToAdd);
+		inputData.push(itemToAdd);
 }
 
-function storeValue(input, rank) {
-		dataStorage[dataStorage.length-1].value = input;
-		dataStorage[dataStorage.length-1].rank = rank;
+function storeValue(inputData, value, rank) {
+		inputData[inputData.length-1].value = value;
+		inputData[inputData.length-1].rank = rank;
 }
 
 function getValue(dataSource) {
@@ -137,9 +149,11 @@ function format(inputData) {
 	if (operators.includes(inputData[inputData.length-1].value)){
 		inputData.pop();
 	}
+
 	while (inputData[0].value === '' || operators.includes(inputData[0].value)){
 		inputData.shift();
 	}
+	
 	for (var i = 0; i < inputData.length; i++) {
 	 	if (inputData[i].value === '*' || inputData[i].value === '/'){
 	 	inputData[i].rank = 3;
@@ -177,7 +191,6 @@ function doMath(inputData) {
 		if (inputData[i].rank === 2) {
 			if (inputData[i].value === '+') {
 				inputData[i-1].value = (parseFloat(inputData[i-1].value) + parseFloat(inputData[i+1].value)).toFixed(6);
-				// inputData[i-1].value.toFixed(6);
 			}
 			if (inputData[i].value === '-') {
 				inputData[i-1].value -= inputData[i+1].value; 
