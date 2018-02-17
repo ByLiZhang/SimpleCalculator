@@ -102,6 +102,9 @@ function format(inputData) {
 	if (operators.includes(inputData[inputData.length-1].value)){
 		inputData.pop();
 	}
+	while (inputData[0].value === '' || operators.includes(inputData[0].value)){
+		inputData.shift();
+	}
 	for (var i = 0; i < inputData.length; i++) {
 	 	if (inputData[i].value === '*' || inputData[i].value === '/'){
 	 	inputData[i].rank = 3;
