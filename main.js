@@ -48,7 +48,7 @@ function handleNumberClick() {
 	if (numberClicked === '=') {
 		if(!calculated){
 			format(dataStorage);
-			inputHistory = dataStorage.slice();
+			inputHistory = JSON.parse(JSON.stringify(dataStorage));
 			console.log(inputHistory);
 			var result = doMath(dataStorage);
 			updateDisplay(result);
