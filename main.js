@@ -23,7 +23,10 @@ function addClickHandlers() {
 function handleClearClick() {
 	if ($(this).text() === 'CE') {
 		dataStorage.pop();
-	} 
+		if (dataStorage.length === 0) {
+			insert(dataStorage);
+		} 
+	}
 	if ($(this).text() === 'C') {
 		dataStorage = [];
 		insert(dataStorage);
