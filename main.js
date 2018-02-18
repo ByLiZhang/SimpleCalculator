@@ -105,7 +105,21 @@ function handleEquals(inputData) {
 			result = doMath(inputData);
 			calculated = true;
 			console.log('result',result);
-		} else {
+		} else if (isNumeric(inputData[inputData.length-2].value) && operators.includes(inputData[inputData.length-1].value)) {
+			format(inputData);
+			var lastOperand = JSON.parse(JSON.stringify(inputData.splice(inputData.length-1,1)));
+			console.log(lastOperand[0]);
+			doMath(inputData);
+			console.log('here!');
+			inputData.push(lastOperand[0]);
+			var repeatData = JSON.parse(JSON.stringify(inputData[inputData.length-2]));
+			console.log('repeatData:',repeatData);
+			inputData.push(repeatData);
+			console.log('pushed',inputData);
+			format(inputData);
+			result = doMath(inputData);
+			calculated = true;
+		}else {
 			inputHistory = JSON.parse(JSON.stringify(inputData));
 			format(inputData);
 			result = doMath(inputData);
@@ -158,9 +172,9 @@ function getValue(inputData) {
 }
 
 function format(inputData) {
-	if (operators.includes(inputData[inputData.length-1].value)){
-		inputData.pop();
-	}
+	// if (operators.includes(inputData[inputData.length-1].value)){
+	// 	inputData.pop();
+	// }
 
 	if (inputData[0].value == 0 && inputData[1].value !== '.') {
 		inputData.shift();
