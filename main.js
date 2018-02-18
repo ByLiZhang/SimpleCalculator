@@ -5,8 +5,8 @@ var dataStorage = [{
 	rank: '',
 }];
 var inputHistory = [];
-var operators = ['+', '-', '*', '/', 'sin', 'cos'];
-var ext_operators = ['sin', 'cos'];
+var operators = ['+', '-', '*', '/', 'sin', 'cos', 'power', 'root'];
+var ext_operators = ['sin', 'cos', 'power', 'root'];
 var calculated = false;
 
 function initializeApp() {
@@ -170,7 +170,9 @@ function format(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
 	 	if (inputData[i].value === '*' || inputData[i].value === '/'){
 	 	inputData[i].rank = 3;
-	 	} else if (inputData[i].value === 'sin' || inputData[i].value === 'cos') {
+	 	} else if (inputData[i].value === 'power' || inputData[i].value === 'root') {
+	 	inputData[i].rank = 4;
+	 	}else if (inputData[i].value === 'sin' || inputData[i].value === 'cos') {
 	 	inputData[i].rank = 5;
 	 	} else if (!operators.includes(inputData[i].value)){
 	 		inputData[i].value = parseFloat(inputData[i].value);
@@ -196,7 +198,17 @@ function doMath(inputData) {
 			i -= 1;
 		}
 	}
-
+	for (var i = 0; i < inputData.length; i++) {
+		if (inputData[i].rank === 4){
+			if (inputData[i].value === 'power') {
+				inputData[i-1].value = Math.pow( inputData[i-1].value, inputData[i+1].value).toFixed(6);
+			} else if (inputData[i].value === 'root') {
+				inputData[i-1].value = Math.pow( inputData[i-1].value, 1/inputData[i+1].value).toFixed(6);
+			}
+			inputData.splice(i, 2);
+			i -= 2;
+		}
+	}
 	for (var i = 0; i < inputData.length; i++){
 		if (inputData[i].rank === 3){
 			if (inputData[i].value === '*'){

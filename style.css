@@ -69,7 +69,7 @@ div.panel {
 	margin: 0 auto;
 	box-sizing: border-box;
 	border-top: 8px solid rgb(19, 108, 142) ;
-	font-size: 2rem;
+	font-size: 1rem;
 }
 
 .buttons {
@@ -166,6 +166,10 @@ button:hover {
 	height: 15%;
 	font-size: 1.5rem;
 	margin: 2%;
+}
+
+.expansion .ext_operators > button sup {
+	font-size: 0.8rem;
 }
 
 @media only screen and (max-width: 670px) {
