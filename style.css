@@ -73,6 +73,7 @@ div.panel {
 	box-sizing: border-box;
 	border-top: 8px solid rgb(19, 108, 142) ;
 	font-size: 1rem;
+	padding-left: 2%; 
 }
 
 .buttons {
