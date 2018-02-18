@@ -5,7 +5,8 @@ var dataStorage = [{
 	rank: '',
 }];
 var inputHistory = [];
-var operators = ['+', '-', '*', '/'];
+var operators = ['+', '-', '*', '/', 'sin', 'cos'];
+var ext_operators = ['sin', 'cos'];
 var calculated = false;
 
 function initializeApp() {
@@ -15,6 +16,7 @@ function initializeApp() {
 function addClickHandlers() {
 	$('.clear button').on('click', handleClearClick);
 	$('.operators button').on('click', handleOperatorClick);
+	$('.ext_operators button').on('click', handleOperatorClick);
 	$('.numbers button').on('click', handleNumberClick);
 }
 
@@ -33,8 +35,8 @@ function handleOperatorClick() {
 	var operatorClicked = $(this).attr('value');
 	var lastEntry = dataStorage[dataStorage.length-1];
 	calculated = false;
-	if ( operators.includes(lastEntry.value)) {
-			lastEntry.value = operatorClicked; // only stores the last operator
+	if ( operators.includes(lastEntry.value) && !ext_operators.includes(operatorClicked)) {
+			lastEntry.value = operatorClicked; // only stores the last basic operator
 	} else if ( lastEntry.value !== undefined){ 
 		insert(dataStorage,operatorClicked, 2);
 	}		
@@ -161,13 +163,15 @@ function format(inputData) {
 		inputData.shift();
 	}
 
-	while (inputData[0].value === '' || operators.includes(inputData[0].value)){
+	while (inputData[0].value === '' || operators.includes(inputData[0].value) && !ext_operators.includes(inputData[0].value)){
 		inputData.shift(); //for 'premature operation'
 	}
 	
 	for (var i = 0; i < inputData.length; i++) {
 	 	if (inputData[i].value === '*' || inputData[i].value === '/'){
 	 	inputData[i].rank = 3;
+	 	} else if (inputData[i].value === 'sin' || inputData[i].value === 'cos') {
+	 	inputData[i].rank = 5;
 	 	} else if (!operators.includes(inputData[i].value)){
 	 		inputData[i].value = parseFloat(inputData[i].value);
 	 	}
@@ -180,7 +184,18 @@ function updateDisplay(inputData){
 }
 
 function doMath(inputData) {
-	// if (inputData.length === 1 && inputData[0].value === '')
+	for (var i = 0; i < inputData.length; i++) {
+		if (inputData[i].rank === 5){
+			if (inputData[i].value === 'sin') {
+				inputData[i].value = Math.sin( inputData[i+1].value * Math.PI / 180).toFixed(6);
+			} else if (inputData[i].value === 'cos') {
+				inputData[i].value = Math.cos( inputData[i+1].value * Math.PI / 180).toFixed(6);
+			}
+			inputData[i].rank = 1;
+			inputData.splice(i+1, 1);
+			i -= 1;
+		}
+	}
 
 	for (var i = 0; i < inputData.length; i++){
 		if (inputData[i].rank === 3){
@@ -198,6 +213,7 @@ function doMath(inputData) {
 					inputData.splice(i, 2);
 				}
 			}
+			i -= 2;
 		}
 	}
 	for (var i = 0; i < inputData.length; i++) {
