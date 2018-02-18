@@ -22,6 +22,7 @@ body {
 	width: 80%;
 	min-width: 660px;
 	margin: 0 auto;
+	border: 1px solid blue;
 	box-sizing: border-box;
 }
 
@@ -35,20 +36,31 @@ header {
 	min-height: 95px;
 }
 
-.main {
+div.panel {
+	width: 56%;
+	height: 70%;
+	min-width: 570px;
+	margin: 0 auto;
+	margin-top: 5%;
+	border: 1px solid red;
+}
+
+.main, .expansion {
 	height: 50%;
-	width: 36%;
+	width: 50%;
+	display: inline-block;
 	margin: 0 auto;
 	min-width: 285px;
 	min-height: 435px;
 	background-color: rgb(35,55,65);
+	box-sizing: border-box;
 }
 
 .rectangular {
 	height: 100%;
 	width: 92%;
-	margin: 5% auto;
-	padding-top: 8%;
+	margin: 2% auto;
+	padding-top: 5%;
 	box-sizing: border-box;
 }
 
@@ -117,7 +129,7 @@ header {
 	margin: 4% 0;
 }
 
-.operators > button {
+.operators > button, .expansion button {
 	width: 100%;
 	height: 17%;
 	font-size: 2.3rem;
@@ -138,4 +150,20 @@ button {
 
 button:hover {
 	border: 3px solid rgb(65, 175, 245);	
+}
+
+.expansion {
+	vertical-align: top;
+}
+
+.ext_operators {
+	height: 100%;
+	width: 100%;
+}
+
+.expansion .ext_operators > button {
+	width: 22%;
+	height: 15%;
+	font-size: 1.5rem;
+	margin: 2%;
 }
