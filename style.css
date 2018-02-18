@@ -22,7 +22,6 @@ body {
 	width: 80%;
 	min-width: 660px;
 	margin: 0 auto;
-	border: 1px solid blue;
 	box-sizing: border-box;
 }
 
@@ -42,7 +41,6 @@ div.panel {
 	min-width: 570px;
 	margin: 0 auto;
 	margin-top: 5%;
-	border: 1px solid red;
 }
 
 .main, .expansion {
@@ -168,4 +166,10 @@ button:hover {
 	height: 15%;
 	font-size: 1.5rem;
 	margin: 2%;
+}
+
+@media only screen and (max-width: 670px) {
+	.expansion {
+		display: none;
+	}
 }
