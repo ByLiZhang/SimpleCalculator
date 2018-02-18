@@ -41,6 +41,7 @@ div.panel {
 	min-width: 570px;
 	margin: 0 auto;
 	margin-top: 5%;
+	position: relative;
 }
 
 .main, .expansion {
@@ -180,5 +181,11 @@ button:hover {
 @media only screen and (max-width: 670px) {
 	.expansion {
 		display: none;
+	}
+
+	.main {
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
 	}
 }
