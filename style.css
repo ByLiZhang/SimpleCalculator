@@ -168,6 +168,11 @@ button:hover {
 	margin: 2%;
 }
 
+.expansion .ext_operators > button:nth-of-type(7) {
+	width: 90%;
+	height: 30%;
+}
+
 .expansion .ext_operators > button sup {
 	font-size: 0.8rem;
 }

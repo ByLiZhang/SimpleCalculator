@@ -18,6 +18,17 @@ function addClickHandlers() {
 	$('.operators button').on('click', handleOperatorClick);
 	$('.ext_operators button').on('click', handleOperatorClick);
 	$('.numbers button').on('click', handleNumberClick);
+	$('.ext_operators .intro').on('click', displayIntro);
+}
+
+function displayIntro() {
+	dataStorage = [];
+	inputHistory = [];
+	var intro = "Greetings! My name is Mathy McMathface. How may I be your help?";
+	insert(dataStorage, intro, 1);
+	updateDisplay(dataStorage);
+	dataStorage = [];
+	insert(dataStorage);
 }
 
 function handleClearClick() {
@@ -41,7 +52,7 @@ function handleOperatorClick() {
 	var lastEntry = dataStorage[dataStorage.length-1];
 	calculated = false;
 	if ( operators.includes(lastEntry.value) && !ext_operators.includes(operatorClicked)) {
-			lastEntry.value = operatorClicked; // only stores the last basic operator
+			lastEntry.value = operatorClicked; // only stores the last basic operator, for multiple/changing operands
 	} else if ( lastEntry.value !== undefined){ 
 		insert(dataStorage,operatorClicked, 2);
 	}		
@@ -83,7 +94,6 @@ function isNumeric(num) {
 
 function handleEquals(inputData) {
 	var result;
-	// inputHistory = JSON.parse(JSON.stringify(inputData));
 	if(!calculated){	
 		if (inputData[0].value === '' && inputData.length === 1 && inputHistory.length === 0) {		
 			// for 'missing operands'
@@ -119,21 +129,16 @@ function handleEquals(inputData) {
 		}
 	} else {
 		if (operators.includes(inputData[inputData.length-1].value) && !ext_operators.includes(inputData[inputData.length-1].value)){
-			console.log('here');
 			duplicateLastNumber(inputData);
 			result = doMath(inputData);
 		} else if (!operators.includes(inputData[inputData.length-1].value)) {
 			//for 'operation repeat'
-			console.log('op repeat entered');
 			format(inputData);
-			console.log('inputHistory after =:', inputHistory);
 			var lastOperation = inputHistory.slice(inputHistory.length-2);
-			console.log('lastOperation',lastOperation);
 			// Array.portotype.push.apply(inputData, lastOperation);
 			inputData.push(lastOperation[0]);
 			inputData.push(lastOperation[1]);
 			inputHistory = JSON.parse(JSON.stringify(inputData));
-			console.log(inputData);
 			format(inputData);
 			result = doMath(inputData);
 		}
@@ -172,15 +177,12 @@ function format(inputData) {
 	// if (operators.includes(inputData[inputData.length-1].value)){
 	// 	inputData.pop();
 	// }
-
 	if (inputData[0].value == 0 && inputData[1].value !== '.') {
 		inputData.shift();
 	}
-
 	while (inputData[0].value === '' || operators.includes(inputData[0].value) && !ext_operators.includes(inputData[0].value)){
 		inputData.shift(); //for 'premature operation'
 	}
-	
 	for (var i = 0; i < inputData.length; i++) {
 	 	if (inputData[i].value === '*' || inputData[i].value === '/'){
 	 	inputData[i].rank = 3;
