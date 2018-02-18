@@ -83,6 +83,8 @@ function handleEquals(inputData) {
 			var readyMsg = [];
 			insert(readyMsg, 'Ready', 1);
 			result = readyMsg;
+			inputData = [];
+			insert(inputData);
 			calculated = false;
 		} else if (inputData[0].value !== '' && inputData.length === 1 && inputHistory.length === 0) {
 			// for 'missing operation'
@@ -115,7 +117,6 @@ function handleEquals(inputData) {
 			console.log('op repeat entered');
 			format(inputData);
 			console.log('inputHistory after =:', inputHistory);
-			// inputHistory = JSON.parse(JSON.stringify(inputData));
 			var lastOperation = inputHistory.slice(inputHistory.length-2);
 			console.log('lastOperation',lastOperation);
 			// Array.portotype.push.apply(inputData, lastOperation);
