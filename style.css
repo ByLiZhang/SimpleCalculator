@@ -39,6 +39,7 @@ div.panel {
 	width: 56%;
 	height: 70%;
 	min-width: 570px;
+	max-width: 610px;
 	margin: 0 auto;
 	margin-top: 5%;
 	position: relative;
@@ -50,6 +51,7 @@ div.panel {
 	display: inline-block;
 	margin: 0 auto;
 	min-width: 285px;
+	max-width: 300px;
 	min-height: 435px;
 	background-color: rgb(35,55,65);
 	box-sizing: border-box;
