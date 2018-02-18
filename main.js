@@ -5,8 +5,8 @@ var dataStorage = [{
 	rank: '',
 }];
 var inputHistory = [];
-var operators = ['+', '-', '*', '/', 'sin', 'cos', 'power', 'root'];
-var ext_operators = ['sin', 'cos', 'power', 'root'];
+var operators = ['+', '-', '*', '/', 'sin', 'cos', 'power', 'root', 'log', 'factorial'];
+var ext_operators = ['sin', 'cos', 'power', 'root', 'log', 'factorial'];
 var calculated = false;
 
 function initializeApp() {
@@ -186,7 +186,7 @@ function format(inputData) {
 	 	inputData[i].rank = 3;
 	 	} else if (inputData[i].value === 'power' || inputData[i].value === 'root') {
 	 	inputData[i].rank = 4;
-	 	}else if (inputData[i].value === 'sin' || inputData[i].value === 'cos') {
+	 	}else if (inputData[i].value === 'sin' || inputData[i].value === 'cos' || inputData[i].value === 'log' || inputData[i].value === 'factorial') {
 	 	inputData[i].rank = 5;
 	 	} else if (!operators.includes(inputData[i].value)){
 	 		inputData[i].value = parseFloat(inputData[i].value);
@@ -199,21 +199,37 @@ function updateDisplay(inputData){
 	$('.screen').text(displayMessage);
 }
 
+function factorial(num) {
+	if (num >= 0) {
+		var result = 1;
+		for (var i = 2; i <= num; i++){
+			result *= i;
+		}
+		return result;
+	} else {
+		return 'Error';
+	}
+}
+
 function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
-		if (inputData[i].rank === 5 && operators.includes(inputData[i-1].value)){
+		if (inputData[i].rank === 5){
 			if (inputData[i].value === 'sin') {
 				inputData[i].value = Math.sin( inputData[i+1].value * Math.PI / 180).toFixed(6);
 			} else if (inputData[i].value === 'cos') {
 				inputData[i].value = Math.cos( inputData[i+1].value * Math.PI / 180).toFixed(6);
+			} else if (inputData[i].value === 'log'){
+				inputData[i].value = Math.log10(inputData[i+1].value);
+			} else if (inputData[i].value === 'factorial') {
+				inputData[i].value = factorial(inputData[i+1].value);
 			}
 			inputData[i].rank = 1;
 			inputData.splice(i+1, 1);
 			i -= 1;
-		} else if (inputData[i].rank === 5 && !operators.includes(inputData[i-1].value)){
-			inputData = [{
-						value: 'Error'
-			}];
+		// } else if (inputData[i].rank === 5 && !operators.includes(inputData[i-1].value)){
+		// 	inputData = [{
+		// 				value: 'Error'
+		// 	}];
 		}
 	}
 	for (var i = 0; i < inputData.length; i++) {
