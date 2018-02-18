@@ -30,6 +30,8 @@ function handleClearClick() {
 	if ($(this).text() === 'C') {
 		dataStorage = [];
 		insert(dataStorage);
+		inputHistory = [];
+		calculated = false;
 	}
 	updateDisplay(dataStorage);
 }
@@ -83,7 +85,7 @@ function handleEquals(inputData) {
 	var result;
 	// inputHistory = JSON.parse(JSON.stringify(inputData));
 	if(!calculated){	
-		if (inputData[0].value === '' && inputData.length === 1) {		
+		if (inputData[0].value === '' && inputData.length === 1 && inputHistory.length === 0) {		
 			// for 'missing operands'
 			var readyMsg = [];
 			insert(readyMsg, 'Ready', 1);
