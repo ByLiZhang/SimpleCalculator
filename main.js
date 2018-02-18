@@ -99,26 +99,16 @@ function handleEquals(inputData) {
 			calculated = true;
 		} else if(inputData.length === 2 && isNumeric(inputData[0].value) && operators.includes(inputData[1].value)){
 			//for 'partial operand'
-			var repeatData = JSON.parse(JSON.stringify(inputData[0]));
-			console.log('repeatData:',repeatData);
-			inputData.push(repeatData); 
-			console.log('pushed',inputData);
-			format(inputData);
+			duplicateLastNumber(inputData);
 			result = doMath(inputData);
 			calculated = true;
-			console.log('result',result);
 		} else if (isNumeric(inputData[inputData.length-2].value) && operators.includes(inputData[inputData.length-1].value)) {
+			//for 'operation rollover'
 			format(inputData);
 			var lastOperand = JSON.parse(JSON.stringify(inputData.splice(inputData.length-1,1)));
-			console.log(lastOperand[0]);
 			doMath(inputData);
-			console.log('here!');
 			inputData.push(lastOperand[0]);
-			var repeatData = JSON.parse(JSON.stringify(inputData[inputData.length-2]));
-			console.log('repeatData:',repeatData);
-			inputData.push(repeatData);
-			console.log('pushed',inputData);
-			format(inputData);
+			duplicateLastNumber(inputData);
 			result = doMath(inputData);
 			calculated = true;
 		}else {
@@ -128,10 +118,9 @@ function handleEquals(inputData) {
 			calculated = true;
 		}
 	} else {
-		if (operators.includes(inputData[inputData.length-1].value)){
-			var repeatData = JSON.parse(JSON.stringify(inputData[inputData.length-2]));
-			inputData.push(repeatData);
-			format(inputData);
+		if (operators.includes(inputData[inputData.length-1].value) && !ext_operators.includes(inputData[inputData.length-1].value)){
+			console.log('here');
+			duplicateLastNumber(inputData);
 			result = doMath(inputData);
 		} else if (!operators.includes(inputData[inputData.length-1].value)) {
 			//for 'operation repeat'
@@ -151,6 +140,12 @@ function handleEquals(inputData) {
 		calculated = true;
 	}	
 	updateDisplay(result);
+}
+
+function duplicateLastNumber(inputData) {
+	var repeatData = JSON.parse(JSON.stringify(inputData[inputData.length-2]));
+	inputData.push(repeatData);
+	format(inputData);
 }
 
 function insert(inputData, value, rank) {
@@ -206,7 +201,7 @@ function updateDisplay(inputData){
 
 function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
-		if (inputData[i].rank === 5){
+		if (inputData[i].rank === 5 && operators.includes(inputData[i-1].value)){
 			if (inputData[i].value === 'sin') {
 				inputData[i].value = Math.sin( inputData[i+1].value * Math.PI / 180).toFixed(6);
 			} else if (inputData[i].value === 'cos') {
@@ -215,6 +210,10 @@ function doMath(inputData) {
 			inputData[i].rank = 1;
 			inputData.splice(i+1, 1);
 			i -= 1;
+		} else if (inputData[i].rank === 5 && !operators.includes(inputData[i-1].value)){
+			inputData = [{
+						value: 'Error'
+			}];
 		}
 	}
 	for (var i = 0; i < inputData.length; i++) {
