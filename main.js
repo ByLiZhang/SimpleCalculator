@@ -95,8 +95,8 @@ function handleEquals(inputData) {
 			calculated = false;
 		} else if (inputData[0].value !== '' && inputData.length === 1 && inputHistory.length === 0) {
 			// for 'missing operation'
-			result = doMath(inputData);
-			calculated = true;
+			calculated = false;
+			return
 		} else if(inputData.length === 2 && isNumeric(inputData[0].value) && operators.includes(inputData[1].value)){
 			//for 'partial operand'
 			duplicateLastNumber(inputData);
