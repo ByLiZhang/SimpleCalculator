@@ -21,16 +21,6 @@ function addClickHandlers() {
 	$('.ext_operators .intro').on('click', displayIntro);
 }
 
-function displayIntro() {
-	dataStorage = [];
-	inputHistory = [];
-	var intro = "Greetings! My name is Mathy McMathface. How may I be your help?";
-	insert(dataStorage, intro, 1);
-	updateDisplay(dataStorage);
-	dataStorage = [];
-	insert(dataStorage);
-}
-
 function handleClearClick() {
 	if ($(this).text() === 'CE') {
 		dataStorage.pop();
@@ -211,6 +201,16 @@ function factorial(num) {
 	} else {
 		return 'Error';
 	}
+}
+
+function displayIntro() {
+	dataStorage = [];
+	inputHistory = [];
+	var intro = "Greetings! My name is Mathy McMathface. May I help you with some math?";
+	insert(dataStorage, intro, 1);
+	updateDisplay(dataStorage);
+	dataStorage = [];
+	insert(dataStorage);
 }
 
 function doMath(inputData) {
