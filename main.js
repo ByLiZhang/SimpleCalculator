@@ -217,11 +217,14 @@ function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
 		if (inputData[i].rank === 5){
 			if (inputData[i].value === 'sin') {
-				inputData[i].value = Math.sin( inputData[i+1].value * Math.PI / 180).toFixed(6);
+				inputData[i].value = Math.sin( inputData[i+1].value * Math.PI / 180);
+				inputData[i].value = parseFloat(inputData[i].value.toFixed(6)).toString();
 			} else if (inputData[i].value === 'cos') {
-				inputData[i].value = Math.cos( inputData[i+1].value * Math.PI / 180).toFixed(6);
+				inputData[i].value = Math.cos( inputData[i+1].value * Math.PI / 180);
+				inputData[i].value = parseFloat(inputData[i].value.toFixed(6)).toString();
 			} else if (inputData[i].value === 'log'){
 				inputData[i].value = Math.log10(inputData[i+1].value);
+				inputData[i].value = parseFloat(inputData[i].value.toFixed(6)).toString();
 			} else if (inputData[i].value === 'factorial') {
 				inputData[i].value = factorial(inputData[i+1].value);
 			}
@@ -237,9 +240,9 @@ function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
 		if (inputData[i].rank === 4){
 			if (inputData[i].value === 'power') {
-				inputData[i-1].value = Math.pow( inputData[i-1].value, inputData[i+1].value).toFixed(6);
+				inputData[i-1].value = parseFloat(Math.pow( inputData[i-1].value, inputData[i+1].value).toFixed(6)).toString();
 			} else if (inputData[i].value === 'root') {
-				inputData[i-1].value = Math.pow( inputData[i-1].value, 1/inputData[i+1].value).toFixed(6);
+				inputData[i-1].value = parseFloat(Math.pow( inputData[i-1].value, 1/inputData[i+1].value).toFixed(6)).toString();
 			}
 			inputData.splice(i, 2);
 			i -= 2;
@@ -248,7 +251,8 @@ function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++){
 		if (inputData[i].rank === 3){
 			if (inputData[i].value === '*'){
-				inputData[i-1].value *= inputData[i+1].value; 
+				inputData[i-1].value *= inputData[i+1].value;
+				inputData[i-1].value = parseFloat(inputData[i-1].value.toFixed(6)).toString();
 				inputData.splice(i, 2);
 			} else if (inputData[i].value === '/'){
 				if (parseFloat(inputData[i+1].value) === 0) {
@@ -257,7 +261,7 @@ function doMath(inputData) {
 					}];
 				} else {
 					inputData[i-1].value /= inputData[i+1].value; 
-					inputData[i-1].value = Number(inputData[i-1].value).toFixed(6);
+					inputData[i-1].value = parseFloat((inputData[i-1].value).toFixed(6)).toString();
 					inputData.splice(i, 2);
 				}
 			}
@@ -267,10 +271,11 @@ function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
 		if (inputData[i].rank === 2) {
 			if (inputData[i].value === '+') {
-				inputData[i-1].value = (parseFloat(inputData[i-1].value) + parseFloat(inputData[i+1].value)).toFixed(6);
+				inputData[i-1].value = parseFloat((parseFloat(inputData[i-1].value) + parseFloat(inputData[i+1].value)).toFixed(6)).toString();
 			}
 			if (inputData[i].value === '-') {
 				inputData[i-1].value -= inputData[i+1].value; 
+				inputData[i-1].value = parseFloat(inputData[i-1].value.toFixed(6)).toString(); 
 			}
 			inputData.splice(i, 2);
 			i -= 2;
