@@ -7,7 +7,7 @@ var dataStorage = [{
 var inputHistory = [];
 var operators = ['+', '-', '*', '/', 'sin', 'cos', 'power', 'root', 'log', 'factorial'];
 var ext_operators = ['sin', 'cos', 'power', 'root', 'log', 'factorial'];
-var calculated = false;
+var calculated = false;  //using this flag to distinguish if a calculation has been performed or not
 
 function initializeApp() {
 	addClickHandlers();
@@ -22,17 +22,17 @@ function addClickHandlers() {
 }
 
 function handleClearClick() {
-	if ($(this).text() === 'CE') {
+	if ($(this).text() === 'CE') {  
 		dataStorage.pop();
 		if (dataStorage.length === 0) {
-			insert(dataStorage);
+			insert(dataStorage);  //remove the last entry
 		} 
 	}
 	if ($(this).text() === 'C') {
 		dataStorage = [];
 		insert(dataStorage);
 		inputHistory = [];
-		calculated = false;
+		calculated = false;  //re-initiate the whole data entry and input history
 	}
 	updateDisplay(dataStorage);
 }
@@ -57,8 +57,8 @@ function handleNumberClick() {
 	} else {
 		if (numberClicked === '.'){
 			if(lastEntry.value.toString().indexOf('.') === -1 && !operators.includes(lastEntry.value)) {
-				storeValue(dataStorage,lastEntry.value += numberClicked, 1);
-			} else if (operators.includes(lastEntry.value)){
+				storeValue(dataStorage, lastEntry.value += numberClicked, 1); // allows the 1st decimal point
+			} else if (operators.includes(lastEntry.value)){ //allows a decimal point after an operand
 				insert(dataStorage,numberClicked, 1);
 			}
 		} else if (isNumeric(numberClicked)) { 
@@ -66,10 +66,10 @@ function handleNumberClick() {
 				dataStorage = [];
 				insert(dataStorage);
 				lastEntry = dataStorage[dataStorage.length-1];
-				calculated = false;
+				calculated = false;  // re-initiate the entry after calculation and then a new number pressed
 			} 
 			if ( lastEntry.value === undefined || !operators.includes(lastEntry.value)){
-			storeValue(dataStorage,lastEntry.value += numberClicked, 1);
+			storeValue(dataStorage,lastEntry.value += numberClicked, 1); // if no number or operand has been entered, concatenate the entry
 			} else if (operators.includes(lastEntry.value)){
 				insert(dataStorage,numberClicked, 1);
 			}
@@ -164,16 +164,13 @@ function getValue(inputData) {
 }
 
 function format(inputData) {
-	// if (operators.includes(inputData[inputData.length-1].value)){
-	// 	inputData.pop();
-	// }
 	if (inputData[0].value == 0 && inputData[1].value !== '.') {
 		inputData.shift();
 	}
 	while (inputData[0].value === '' || operators.includes(inputData[0].value) && !ext_operators.includes(inputData[0].value)){
 		inputData.shift(); //for 'premature operation'
 	}
-	for (var i = 0; i < inputData.length; i++) {
+	for (var i = 0; i < inputData.length; i++) {  //changing operand ranks as needed
 	 	if (inputData[i].value === '*' || inputData[i].value === '/'){
 	 	inputData[i].rank = 3;
 	 	} else if (inputData[i].value === 'power' || inputData[i].value === 'root') {
@@ -231,10 +228,6 @@ function doMath(inputData) {
 			inputData[i].rank = 1;
 			inputData.splice(i+1, 1);
 			i -= 1;
-		// } else if (inputData[i].rank === 5 && !operators.includes(inputData[i-1].value)){
-		// 	inputData = [{
-		// 				value: 'Error'
-		// 	}];
 		}
 	}
 	for (var i = 0; i < inputData.length; i++) {
