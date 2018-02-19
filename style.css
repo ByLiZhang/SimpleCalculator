@@ -160,6 +160,10 @@ button:hover {
 	vertical-align: top;
 }
 
+.main, .expansion {
+	box-shadow: 3px 2px 2px 1px #222222;
+}
+
 .ext_operators {
 	height: 80%;
 	width: 100%;
