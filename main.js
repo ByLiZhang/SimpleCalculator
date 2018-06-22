@@ -4,6 +4,7 @@ var dataStorage = [{
 	value: '',
 	rank: '',
 }];
+
 var inputHistory = [];
 var operators = ['+', '-', '*', '/'];
 var calculated = false;
