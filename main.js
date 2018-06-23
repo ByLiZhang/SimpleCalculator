@@ -6,8 +6,8 @@ var dataStorage = [{
 }];
 
 var inputHistory = [];
-var operators = ['+', '-', '*', '/', 'sin', 'cos', 'power', 'root'];
-var ext_operators = ['sin', 'cos', 'power', 'root'];
+var operators = ['+', '-', '*', '/', 'sin', 'cos', 'power', 'root', 'log', 'factorial'];
+var ext_operators = ['sin', 'cos', 'power', 'root', 'log', 'factorial'];
 var calculated = false;
 
 function initializeApp() {
@@ -24,10 +24,15 @@ function addClickHandlers() {
 function handleClearClick() {
 	if ($(this).text() === 'CE') {
 		dataStorage.pop();
-	} 
+		if (dataStorage.length === 0) {
+			insert(dataStorage);
+		} 
+	}
 	if ($(this).text() === 'C') {
 		dataStorage = [];
 		insert(dataStorage);
+		inputHistory = [];
+		calculated = false;
 	}
 	updateDisplay(dataStorage);
 }
@@ -81,7 +86,7 @@ function handleEquals(inputData) {
 	var result;
 	// inputHistory = JSON.parse(JSON.stringify(inputData));
 	if(!calculated){	
-		if (inputData[0].value === '' && inputData.length === 1) {		
+		if (inputData[0].value === '' && inputData.length === 1 && inputHistory.length === 0) {		
 			// for 'missing operands'
 			var readyMsg = [];
 			insert(readyMsg, 'Ready', 1);
@@ -95,25 +100,28 @@ function handleEquals(inputData) {
 			calculated = true;
 		} else if(inputData.length === 2 && isNumeric(inputData[0].value) && operators.includes(inputData[1].value)){
 			//for 'partial operand'
-			var repeatData = JSON.parse(JSON.stringify(inputData[0]));
-			console.log('repeatData:',repeatData);
-			inputData.push(repeatData); 
-			console.log('pushed',inputData);
-			format(inputData);
+			duplicateLastNumber(inputData);
 			result = doMath(inputData);
 			calculated = true;
-			console.log('result',result);
-		} else {
+		} else if (isNumeric(inputData[inputData.length-2].value) && operators.includes(inputData[inputData.length-1].value)) {
+			//for 'operation rollover'
+			format(inputData);
+			var lastOperand = JSON.parse(JSON.stringify(inputData.splice(inputData.length-1,1)));
+			doMath(inputData);
+			inputData.push(lastOperand[0]);
+			duplicateLastNumber(inputData);
+			result = doMath(inputData);
+			calculated = true;
+		}else {
 			inputHistory = JSON.parse(JSON.stringify(inputData));
 			format(inputData);
 			result = doMath(inputData);
 			calculated = true;
 		}
 	} else {
-		if (operators.includes(inputData[inputData.length-1].value)){
-			var repeatData = JSON.parse(JSON.stringify(inputData[inputData.length-2]));
-			inputData.push(repeatData);
-			format(inputData);
+		if (operators.includes(inputData[inputData.length-1].value) && !ext_operators.includes(inputData[inputData.length-1].value)){
+			console.log('here');
+			duplicateLastNumber(inputData);
 			result = doMath(inputData);
 		} else if (!operators.includes(inputData[inputData.length-1].value)) {
 			//for 'operation repeat'
@@ -133,6 +141,12 @@ function handleEquals(inputData) {
 		calculated = true;
 	}	
 	updateDisplay(result);
+}
+
+function duplicateLastNumber(inputData) {
+	var repeatData = JSON.parse(JSON.stringify(inputData[inputData.length-2]));
+	inputData.push(repeatData);
+	format(inputData);
 }
 
 function insert(inputData, value, rank) {
@@ -156,9 +170,9 @@ function getValue(inputData) {
 }
 
 function format(inputData) {
-	if (operators.includes(inputData[inputData.length-1].value)){
-		inputData.pop();
-	}
+	// if (operators.includes(inputData[inputData.length-1].value)){
+	// 	inputData.pop();
+	// }
 
 	if (inputData[0].value == 0 && inputData[1].value !== '.') {
 		inputData.shift();
@@ -173,7 +187,7 @@ function format(inputData) {
 	 	inputData[i].rank = 3;
 	 	} else if (inputData[i].value === 'power' || inputData[i].value === 'root') {
 	 	inputData[i].rank = 4;
-	 	}else if (inputData[i].value === 'sin' || inputData[i].value === 'cos') {
+	 	}else if (inputData[i].value === 'sin' || inputData[i].value === 'cos' || inputData[i].value === 'log' || inputData[i].value === 'factorial') {
 	 	inputData[i].rank = 5;
 	 	} else if (!operators.includes(inputData[i].value)){
 	 		inputData[i].value = parseFloat(inputData[i].value);
@@ -186,6 +200,18 @@ function updateDisplay(inputData){
 	$('.screen').text(displayMessage);
 }
 
+function factorial(num) {
+	if (num >= 0) {
+		var result = 1;
+		for (var i = 2; i <= num; i++){
+			result *= i;
+		}
+		return result;
+	} else {
+		return 'Error';
+	}
+}
+
 function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
 		if (inputData[i].rank === 5){
@@ -193,10 +219,18 @@ function doMath(inputData) {
 				inputData[i].value = Math.sin( inputData[i+1].value * Math.PI / 180).toFixed(6);
 			} else if (inputData[i].value === 'cos') {
 				inputData[i].value = Math.cos( inputData[i+1].value * Math.PI / 180).toFixed(6);
+			} else if (inputData[i].value === 'log'){
+				inputData[i].value = Math.log10(inputData[i+1].value);
+			} else if (inputData[i].value === 'factorial') {
+				inputData[i].value = factorial(inputData[i+1].value);
 			}
 			inputData[i].rank = 1;
 			inputData.splice(i+1, 1);
 			i -= 1;
+		// } else if (inputData[i].rank === 5 && !operators.includes(inputData[i-1].value)){
+		// 	inputData = [{
+		// 				value: 'Error'
+		// 	}];
 		}
 	}
 	for (var i = 0; i < inputData.length; i++) {
