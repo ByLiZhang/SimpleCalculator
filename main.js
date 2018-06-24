@@ -8,7 +8,7 @@ var dataStorage = [{
 var inputHistory = [];
 var operators = ['+', '-', '*', '/', 'sin', 'cos', 'power', 'root', 'log', 'factorial'];
 var ext_operators = ['sin', 'cos', 'power', 'root', 'log', 'factorial'];
-var calculated = false;
+var calculated = false;  //using this flag to distinguish if a calculation has been performed or not
 
 function initializeApp() {
 	addClickHandlers();
@@ -19,20 +19,21 @@ function addClickHandlers() {
 	$('.operators button').on('click', handleOperatorClick);
 	$('.ext_operators button').on('click', handleOperatorClick);
 	$('.numbers button').on('click', handleNumberClick);
+	$('.ext_operators .intro').on('click', displayIntro);
 }
 
 function handleClearClick() {
-	if ($(this).text() === 'CE') {
+	if ($(this).text() === 'CE') {  
 		dataStorage.pop();
 		if (dataStorage.length === 0) {
-			insert(dataStorage);
+			insert(dataStorage);  //remove the last entry
 		} 
 	}
 	if ($(this).text() === 'C') {
 		dataStorage = [];
 		insert(dataStorage);
 		inputHistory = [];
-		calculated = false;
+		calculated = false;  //re-initiate the whole data entry and input history
 	}
 	updateDisplay(dataStorage);
 }
@@ -42,7 +43,7 @@ function handleOperatorClick() {
 	var lastEntry = dataStorage[dataStorage.length-1];
 	calculated = false;
 	if ( operators.includes(lastEntry.value) && !ext_operators.includes(operatorClicked)) {
-			lastEntry.value = operatorClicked; // only stores the last basic operator
+			lastEntry.value = operatorClicked; // only stores the last basic operator, for multiple/changing operands
 	} else if ( lastEntry.value !== undefined){ 
 		insert(dataStorage,operatorClicked, 2);
 	}		
@@ -57,8 +58,8 @@ function handleNumberClick() {
 	} else {
 		if (numberClicked === '.'){
 			if(lastEntry.value.toString().indexOf('.') === -1 && !operators.includes(lastEntry.value)) {
-				storeValue(dataStorage,lastEntry.value += numberClicked, 1);
-			} else if (operators.includes(lastEntry.value)){
+				storeValue(dataStorage, lastEntry.value += numberClicked, 1); // allows the 1st decimal point
+			} else if (operators.includes(lastEntry.value)){ //allows a decimal point after an operand
 				insert(dataStorage,numberClicked, 1);
 			}
 		} else if (isNumeric(numberClicked)) { 
@@ -66,10 +67,10 @@ function handleNumberClick() {
 				dataStorage = [];
 				insert(dataStorage);
 				lastEntry = dataStorage[dataStorage.length-1];
-				calculated = false;
+				calculated = false;  // re-initiate the entry after calculation and then a new number pressed
 			} 
 			if ( lastEntry.value === undefined || !operators.includes(lastEntry.value)){
-			storeValue(dataStorage,lastEntry.value += numberClicked, 1);
+			storeValue(dataStorage,lastEntry.value += numberClicked, 1); // if no number or operand has been entered, concatenate the entry
 			} else if (operators.includes(lastEntry.value)){
 				insert(dataStorage,numberClicked, 1);
 			}
@@ -84,7 +85,6 @@ function isNumeric(num) {
 
 function handleEquals(inputData) {
 	var result;
-	// inputHistory = JSON.parse(JSON.stringify(inputData));
 	if(!calculated){	
 		if (inputData[0].value === '' && inputData.length === 1 && inputHistory.length === 0) {		
 			// for 'missing operands'
@@ -96,8 +96,8 @@ function handleEquals(inputData) {
 			calculated = false;
 		} else if (inputData[0].value !== '' && inputData.length === 1 && inputHistory.length === 0) {
 			// for 'missing operation'
-			result = doMath(inputData);
-			calculated = true;
+			calculated = false;
+			return
 		} else if(inputData.length === 2 && isNumeric(inputData[0].value) && operators.includes(inputData[1].value)){
 			//for 'partial operand'
 			duplicateLastNumber(inputData);
@@ -120,21 +120,16 @@ function handleEquals(inputData) {
 		}
 	} else {
 		if (operators.includes(inputData[inputData.length-1].value) && !ext_operators.includes(inputData[inputData.length-1].value)){
-			console.log('here');
 			duplicateLastNumber(inputData);
 			result = doMath(inputData);
 		} else if (!operators.includes(inputData[inputData.length-1].value)) {
 			//for 'operation repeat'
-			console.log('op repeat entered');
 			format(inputData);
-			console.log('inputHistory after =:', inputHistory);
 			var lastOperation = inputHistory.slice(inputHistory.length-2);
-			console.log('lastOperation',lastOperation);
 			// Array.portotype.push.apply(inputData, lastOperation);
 			inputData.push(lastOperation[0]);
 			inputData.push(lastOperation[1]);
 			inputHistory = JSON.parse(JSON.stringify(inputData));
-			console.log(inputData);
 			format(inputData);
 			result = doMath(inputData);
 		}
@@ -170,19 +165,13 @@ function getValue(inputData) {
 }
 
 function format(inputData) {
-	// if (operators.includes(inputData[inputData.length-1].value)){
-	// 	inputData.pop();
-	// }
-
 	if (inputData[0].value == 0 && inputData[1].value !== '.') {
 		inputData.shift();
 	}
-
 	while (inputData[0].value === '' || operators.includes(inputData[0].value) && !ext_operators.includes(inputData[0].value)){
 		inputData.shift(); //for 'premature operation'
 	}
-	
-	for (var i = 0; i < inputData.length; i++) {
+	for (var i = 0; i < inputData.length; i++) {  //changing operand ranks as needed
 	 	if (inputData[i].value === '*' || inputData[i].value === '/'){
 	 	inputData[i].rank = 3;
 	 	} else if (inputData[i].value === 'power' || inputData[i].value === 'root') {
@@ -212,33 +201,42 @@ function factorial(num) {
 	}
 }
 
+function displayIntro() {
+	dataStorage = [];
+	inputHistory = [];
+	var intro = "Greetings! My name is Mathy McMathface. May I help you with some math?";
+	insert(dataStorage, intro, 1);
+	updateDisplay(dataStorage);
+	dataStorage = [];
+	insert(dataStorage);
+}
+
 function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
 		if (inputData[i].rank === 5){
 			if (inputData[i].value === 'sin') {
-				inputData[i].value = Math.sin( inputData[i+1].value * Math.PI / 180).toFixed(6);
+				inputData[i].value = Math.sin( inputData[i+1].value * Math.PI / 180);
+				inputData[i].value = parseFloat(inputData[i].value.toFixed(6)).toString();
 			} else if (inputData[i].value === 'cos') {
-				inputData[i].value = Math.cos( inputData[i+1].value * Math.PI / 180).toFixed(6);
+				inputData[i].value = Math.cos( inputData[i+1].value * Math.PI / 180);
+				inputData[i].value = parseFloat(inputData[i].value.toFixed(6)).toString();
 			} else if (inputData[i].value === 'log'){
 				inputData[i].value = Math.log10(inputData[i+1].value);
+				inputData[i].value = parseFloat(inputData[i].value.toFixed(6)).toString();
 			} else if (inputData[i].value === 'factorial') {
 				inputData[i].value = factorial(inputData[i+1].value);
 			}
 			inputData[i].rank = 1;
 			inputData.splice(i+1, 1);
 			i -= 1;
-		// } else if (inputData[i].rank === 5 && !operators.includes(inputData[i-1].value)){
-		// 	inputData = [{
-		// 				value: 'Error'
-		// 	}];
 		}
 	}
 	for (var i = 0; i < inputData.length; i++) {
 		if (inputData[i].rank === 4){
 			if (inputData[i].value === 'power') {
-				inputData[i-1].value = Math.pow( inputData[i-1].value, inputData[i+1].value).toFixed(6);
+				inputData[i-1].value = parseFloat(Math.pow( inputData[i-1].value, inputData[i+1].value).toFixed(6)).toString();
 			} else if (inputData[i].value === 'root') {
-				inputData[i-1].value = Math.pow( inputData[i-1].value, 1/inputData[i+1].value).toFixed(6);
+				inputData[i-1].value = parseFloat(Math.pow( inputData[i-1].value, 1/inputData[i+1].value).toFixed(6)).toString();
 			}
 			inputData.splice(i, 2);
 			i -= 2;
@@ -247,7 +245,8 @@ function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++){
 		if (inputData[i].rank === 3){
 			if (inputData[i].value === '*'){
-				inputData[i-1].value *= inputData[i+1].value; 
+				inputData[i-1].value *= inputData[i+1].value;
+				inputData[i-1].value = parseFloat(inputData[i-1].value.toFixed(6)).toString();
 				inputData.splice(i, 2);
 			} else if (inputData[i].value === '/'){
 				if (parseFloat(inputData[i+1].value) === 0) {
@@ -256,7 +255,7 @@ function doMath(inputData) {
 					}];
 				} else {
 					inputData[i-1].value /= inputData[i+1].value; 
-					inputData[i-1].value = Number(inputData[i-1].value).toFixed(6);
+					inputData[i-1].value = parseFloat((inputData[i-1].value).toFixed(6)).toString();
 					inputData.splice(i, 2);
 				}
 			}
@@ -266,10 +265,11 @@ function doMath(inputData) {
 	for (var i = 0; i < inputData.length; i++) {
 		if (inputData[i].rank === 2) {
 			if (inputData[i].value === '+') {
-				inputData[i-1].value = (parseFloat(inputData[i-1].value) + parseFloat(inputData[i+1].value)).toFixed(6);
+				inputData[i-1].value = parseFloat((parseFloat(inputData[i-1].value) + parseFloat(inputData[i+1].value)).toFixed(6)).toString();
 			}
 			if (inputData[i].value === '-') {
 				inputData[i-1].value -= inputData[i+1].value; 
+				inputData[i-1].value = parseFloat(inputData[i-1].value.toFixed(6)).toString(); 
 			}
 			inputData.splice(i, 2);
 			i -= 2;

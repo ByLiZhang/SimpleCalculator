@@ -39,8 +39,10 @@ div.panel {
 	width: 56%;
 	height: 70%;
 	min-width: 570px;
+	max-width: 610px;
 	margin: 0 auto;
 	margin-top: 5%;
+	position: relative;
 }
 
 .main, .expansion {
@@ -49,6 +51,7 @@ div.panel {
 	display: inline-block;
 	margin: 0 auto;
 	min-width: 285px;
+	max-width: 300px;
 	min-height: 435px;
 	background-color: rgb(35,55,65);
 	box-sizing: border-box;
@@ -70,6 +73,9 @@ div.panel {
 	box-sizing: border-box;
 	border-top: 8px solid rgb(19, 108, 142) ;
 	font-size: 1rem;
+	padding-left: 2%; 
+	padding-top: 1%;
+	color: #333333;
 }
 
 .buttons {
@@ -154,6 +160,10 @@ button:hover {
 	vertical-align: top;
 }
 
+.main, .expansion {
+	box-shadow: 3px 2px 2px 1px #222222;
+}
+
 .ext_operators {
 	height: 80%;
 	width: 100%;
@@ -168,6 +178,11 @@ button:hover {
 	margin: 2%;
 }
 
+.expansion .ext_operators > button:nth-of-type(7) {
+	width: 90%;
+	height: 30%;
+}
+
 .expansion .ext_operators > button sup {
 	font-size: 0.8rem;
 }
@@ -175,5 +190,11 @@ button:hover {
 @media only screen and (max-width: 670px) {
 	.expansion {
 		display: none;
+	}
+
+	.main {
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
 	}
 }
